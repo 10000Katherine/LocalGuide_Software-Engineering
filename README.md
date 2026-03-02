@@ -21,3 +21,24 @@ For detailed information regarding our project requirements, business case, and 
 
 ## 📅 Roadmap Overview
 This project follows an **Agile/Scrum** methodology with a 12-week development timeline, focusing on delivering a Minimum Viable Product (MVP) that includes core features for tourists, guides, and administrators. 
+
+## 🧩 Development Structure
+To support parallel collaboration, the repository uses a module-based folder structure aligned with the 4 developer responsibilities:
+
+```text
+apps/backend/src/main/java/com/localguide/modules/
+  auth-user/        -> Dev1 (Auth and User)
+  guide-tour/       -> Dev2 (Guide, Tour, Search, Availability)
+  booking-payment/  -> Dev3 (Booking, Payment, Notification)
+  review-admin/     -> Dev4 (Review, Favorites, Admin)
+
+apps/web/src/modules/
+  auth-user/        -> Dev1
+  guide-tour/       -> Dev2
+  booking-payment/  -> Dev3
+  review-admin/     -> Dev4
+```
+
+Module ownership details and collaboration rules are documented in:
+- [docs/module-ownership.md](./docs/module-ownership.md)
+- [docs/development-structure.md](./docs/development-structure.md)
