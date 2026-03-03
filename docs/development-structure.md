@@ -38,6 +38,7 @@ scripts/
 ## Collaboration Rules
 
 1. Each developer works mainly in their own module folder.
+   - For Java backend packages, use package-safe names (example: `authuser` for `auth-user`).
 2. Cross-module API changes must be updated in `contracts/openapi/` first.
 3. Shared code should go in `apps/backend/.../common/` or `apps/web/src/shared/`.
 4. Create pull requests from `feature/*` into `develop`.
@@ -49,3 +50,23 @@ scripts/
 - `feature/dev2-guide-tour-*`
 - `feature/dev3-booking-payment-*`
 - `feature/dev4-review-admin-*`
+
+## Dev1 Quick Start
+
+Backend (`apps/backend`):
+1. Create `.env` from `apps/backend/.env.example` and set `JWT_SECRET`.
+2. Run with Java 17 and Maven: `mvn spring-boot:run`.
+
+Frontend (`apps/web`):
+1. Create `.env` from `apps/web/.env.example`.
+2. Install dependencies: `npm install`.
+3. Start dev server: `npm run dev`.
+
+Auth API base path: `/api/v1`
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/refresh`
+- `POST /auth/reset-password/request`
+- `POST /auth/reset-password/confirm`
+- `GET /tourists/me`
+- `PUT /tourists/me`

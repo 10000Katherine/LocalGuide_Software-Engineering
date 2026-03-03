@@ -5,6 +5,7 @@ This document defines module boundaries and ownership for collaboration.
 ## Dev1 - Auth and User
 
 - Backend: `apps/backend/src/main/java/com/localguide/modules/auth-user/`
+- Java package implementation: `apps/backend/src/main/java/com/localguide/modules/authuser/` (hyphen is not valid in Java package names)
 - Frontend: `apps/web/src/modules/auth-user/`
 - Main scope: register, login, refresh token, reset password, tourist profile (`/tourists/me`)
 - Upstream dependency: none (this is the startup blocker module)

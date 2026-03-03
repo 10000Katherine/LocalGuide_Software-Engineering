@@ -1,0 +1,12 @@
+# Backend
+apps/backend/target/
+
+# Frontend
+apps/web/node_modules/
+apps/web/dist/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
