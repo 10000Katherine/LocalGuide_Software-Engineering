@@ -1,5 +1,9 @@
 import axios from "axios";
 
+const notifyAuthLogout = () => {
+  window.dispatchEvent(new CustomEvent("auth:logout"));
+};
+
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api/v1",
   timeout: 10000
@@ -24,6 +28,7 @@ apiClient.interceptors.response.use(
 
     const refreshToken = localStorage.getItem("refreshToken");
     if (!refreshToken) {
+      notifyAuthLogout();
       return Promise.reject(error);
     }
 
@@ -37,6 +42,7 @@ apiClient.interceptors.response.use(
     } catch (refreshError) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      notifyAuthLogout();
       return Promise.reject(refreshError);
     }
   }
