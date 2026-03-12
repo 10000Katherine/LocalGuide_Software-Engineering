@@ -62,6 +62,11 @@ Frontend (`apps/web`):
 2. Install dependencies: `npm install`.
 3. Start dev server: `npm run dev`.
 
+Auth session behavior:
+- Access token is attached via axios request interceptor.
+- On `401`, frontend attempts `/auth/refresh` once.
+- If refresh fails, frontend clears tokens and redirects to `/login`.
+
 Auth API base path: `/api/v1`
 - `POST /auth/register`
 - `POST /auth/login`
