@@ -32,14 +32,14 @@ This checklist tracks Dev3 delivery status in the current branch.
 
 ## Integration and QA
 
-- [ ] Manual flow verified: create booking -> create payment intent -> webhook confirm -> status updates
+- [x] Manual flow verified: create booking -> create payment intent -> webhook confirm -> status updates
 - [x] Frontend build passes (`npm run build`)
-- [ ] Backend tests pass in Windows Java environment
+- [x] Backend tests pass in Windows Java environment
 
 ## Plan (Step-by-step)
 
 1. [x] Implement frontend API layer and store.
 2. [x] Implement booking list/create/detail/payment pages.
 3. [x] Register routes and shell navigation.
-4. [ ] Run frontend build and verify flow against backend.
+4. [x] Run frontend build and verify flow against backend.
 5. [x] Mark completed items in this checklist.
