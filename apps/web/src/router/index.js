@@ -12,7 +12,31 @@ const routes = [
   { path: "/register", name: "register", component: RegisterView },
   { path: "/reset-password/request", name: "request-reset", component: RequestResetView },
   { path: "/reset-password/confirm", name: "confirm-reset", component: ConfirmResetView },
-  { path: "/profile", name: "profile", component: ProfileView, meta: { requiresAuth: true } }
+  { path: "/profile", name: "profile", component: ProfileView, meta: { requiresAuth: true } },
+  {
+    path: "/bookings",
+    name: "booking-list",
+    component: () => import("../modules/booking-payment/views/BookingListView.vue"),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/bookings/new",
+    name: "booking-create",
+    component: () => import("../modules/booking-payment/views/BookingCreateView.vue"),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/bookings/:id",
+    name: "booking-detail",
+    component: () => import("../modules/booking-payment/views/BookingDetailView.vue"),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/bookings/:id/pay",
+    name: "booking-pay",
+    component: () => import("../modules/booking-payment/views/PaymentView.vue"),
+    meta: { requiresAuth: true }
+  }
 ];
 
 const router = createRouter({

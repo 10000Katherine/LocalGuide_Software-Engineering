@@ -1,0 +1,214 @@
+openapi: 3.0.3
+info:
+  title: LocalGuide Booking and Payment API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080/api/v1
+
+paths:
+  /bookings:
+    post:
+      summary: Create booking
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+    get:
+      summary: List current tourist bookings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingResponse'
+
+  /bookings/{id}:
+    get:
+      summary: Get current tourist booking by id
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+
+  /bookings/{id}/cancel:
+    put:
+      summary: Cancel current tourist booking
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiMessageResponse'
+
+  /payments/create-intent:
+    post:
+      summary: Create payment intent for booking
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentIntentRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentIntentResponse'
+
+  /payments/webhook:
+    post:
+      summary: Process payment webhook callback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentWebhookRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiMessageResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CreateBookingRequest:
+      type: object
+      required: [tourId, bookingDate, startTime, numPeople, totalPrice]
+      properties:
+        tourId:
+          type: integer
+          format: int64
+        bookingDate:
+          type: string
+          format: date
+        startTime:
+          type: string
+          format: time
+        numPeople:
+          type: integer
+          minimum: 1
+          maximum: 20
+        totalPrice:
+          type: number
+          format: double
+          minimum: 0.01
+
+    BookingResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        tourId:
+          type: integer
+          format: int64
+        bookingDate:
+          type: string
+          format: date
+        startTime:
+          type: string
+          format: time
+        numPeople:
+          type: integer
+        totalPrice:
+          type: number
+          format: double
+        status:
+          type: string
+          enum:
+            - CREATED
+            - PENDING_PAYMENT
+            - PAYMENT_FAILED
+            - CONFIRMED
+            - IN_PROGRESS
+            - COMPLETED
+            - CANCELLED_BY_TOURIST
+            - CANCELLED_BY_GUIDE
+            - DISPUTED
+        stripePaymentIntentId:
+          type: string
+
+    CreatePaymentIntentRequest:
+      type: object
+      required: [bookingId]
+      properties:
+        bookingId:
+          type: integer
+          format: int64
+
+    PaymentIntentResponse:
+      type: object
+      properties:
+        bookingId:
+          type: integer
+          format: int64
+        paymentIntentId:
+          type: string
+        clientSecret:
+          type: string
+
+    PaymentWebhookRequest:
+      type: object
+      required: [paymentIntentId, status]
+      properties:
+        paymentIntentId:
+          type: string
+        status:
+          type: string
+
+    ApiMessageResponse:
+      type: object
+      properties:
+        message:
+          type: string

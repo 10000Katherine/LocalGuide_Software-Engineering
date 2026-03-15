@@ -4,6 +4,7 @@
       <div class="brand" @click="goHome">LocalGuide</div>
       <nav class="nav-links">
         <router-link to="/profile">Profile</router-link>
+        <router-link v-if="authStore.accessToken" to="/bookings">My Bookings</router-link>
         <router-link v-if="!authStore.accessToken" to="/login">Login</router-link>
         <router-link v-if="!authStore.accessToken" to="/register">Register</router-link>
         <span v-if="authStore.user" class="role-tag">{{ authStore.user.role }}</span>
@@ -17,7 +18,7 @@
 
     <footer class="footer">
       <span>LocalGuide Connect</span>
-      <span>Dev1 auth-user foundation</span>
+      <span>Dev1+Dev3 auth-user · booking-payment</span>
     </footer>
   </div>
 </template>
