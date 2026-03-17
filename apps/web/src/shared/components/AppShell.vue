@@ -4,6 +4,12 @@
       <div class="brand" @click="goHome">LocalGuide</div>
       <nav class="nav-links">
         <router-link to="/profile">Profile</router-link>
+        <router-link v-if="authStore.accessToken" to="/favorites">Favorites</router-link>
+        <router-link v-if="authStore.accessToken" to="/reviews">Reviews</router-link>
+        <router-link v-if="authStore.user?.role === 'GUIDE'" to="/guide-verification">Guide Verification</router-link>
+        <router-link v-if="authStore.user?.role === 'ADMIN'" to="/admin/dashboard">Admin Dashboard</router-link>
+        <router-link v-if="authStore.user?.role === 'ADMIN'" to="/admin/verifications">Verifications</router-link>
+        <router-link v-if="authStore.user?.role === 'ADMIN'" to="/admin/users">Users</router-link>
         <router-link v-if="!authStore.accessToken" to="/login">Login</router-link>
         <router-link v-if="!authStore.accessToken" to="/register">Register</router-link>
         <span v-if="authStore.user" class="role-tag">{{ authStore.user.role }}</span>
@@ -17,7 +23,7 @@
 
     <footer class="footer">
       <span>LocalGuide Connect</span>
-      <span>Dev1 auth-user foundation</span>
+      <span>Dev4 reviews, favorites, admin and DevOps</span>
     </footer>
   </div>
 </template>
@@ -30,7 +36,9 @@ const router = useRouter();
 const authStore = useAuthStore();
 
 const goHome = () => {
-  if (authStore.accessToken) {
+  if (authStore.user?.role === "ADMIN") {
+    router.push("/admin/dashboard");
+  } else if (authStore.accessToken) {
     router.push("/profile");
   } else {
     router.push("/login");
@@ -50,80 +58,31 @@ const logout = async () => {
   grid-template-rows: auto 1fr auto;
   background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
 }
-
 .topbar {
-  height: 64px;
+  min-height: 64px;
   background: #0f172a;
   color: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 24px;
+  padding: 12px 24px;
+  gap: 20px;
 }
-
-.brand {
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: 0.3px;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.nav-links :deep(a) {
-  color: #e2e8f0;
-  text-decoration: none;
-}
-
-.nav-links :deep(a.router-link-active) {
-  color: #93c5fd;
-}
-
+.brand { font-weight: 700; cursor: pointer; letter-spacing: 0.3px; }
+.nav-links { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.nav-links :deep(a) { color: #e2e8f0; text-decoration: none; }
+.nav-links :deep(a.router-link-active) { color: #93c5fd; }
 .role-tag {
-  font-size: 12px;
-  background: #1e293b;
-  border: 1px solid #334155;
-  padding: 4px 8px;
-  border-radius: 999px;
+  font-size: 12px; background: #1e293b; border: 1px solid #334155; padding: 4px 8px; border-radius: 999px;
 }
-
-.logout {
-  background: #ef4444;
-  color: #fff;
-  border: 0;
-  border-radius: 8px;
-  padding: 7px 12px;
-  cursor: pointer;
-}
-
-.content {
-  padding: 0;
-}
-
+.logout { background: #ef4444; color: #fff; border: 0; border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+.content { padding: 0; }
 .footer {
-  height: 48px;
-  border-top: 1px solid #dbe3f0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 24px;
-  color: #475569;
-  font-size: 13px;
-  background: #fff;
+  min-height: 48px; border-top: 1px solid #dbe3f0; display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 24px; color: #475569; font-size: 13px; background: #fff;
 }
-
-@media (max-width: 640px) {
-  .topbar,
-  .footer {
-    padding: 0 12px;
-  }
-
-  .nav-links {
-    gap: 8px;
-    font-size: 13px;
-  }
+@media (max-width: 900px) {
+  .topbar, .footer { padding: 12px; }
+  .nav-links { gap: 8px; font-size: 13px; }
 }
 </style>
