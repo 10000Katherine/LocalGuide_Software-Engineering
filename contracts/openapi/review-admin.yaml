@@ -1,0 +1,48 @@
+openapi: 3.0.3
+info:
+  title: LocalGuide Review/Admin API
+  version: 1.0.0
+paths:
+  /api/v1/tourists/me/favorites:
+    get:
+      summary: List tourist favorites
+    post:
+      summary: Add a guide to favorites
+  /api/v1/tourists/me/favorites/{guideId}:
+    delete:
+      summary: Remove favorite guide
+  /api/v1/reviews:
+    post:
+      summary: Create a review
+  /api/v1/reviews/{reviewId}/reply:
+    put:
+      summary: Guide reply to a review
+  /api/v1/guides/{guideId}/reviews:
+    get:
+      summary: Get reviews for a guide
+  /api/v1/guides/{guideId}/ratings/summary:
+    get:
+      summary: Get rating summary for a guide
+  /api/v1/guides/me/verification:
+    get:
+      summary: View current guide verification request
+    post:
+      summary: Submit guide verification request
+  /api/v1/admin/verifications:
+    get:
+      summary: List pending verification requests
+  /api/v1/admin/verifications/{requestId}:
+    put:
+      summary: Approve or reject a verification request
+  /api/v1/admin/users:
+    get:
+      summary: List users for admin panel
+  /api/v1/admin/users/{userId}:
+    put:
+      summary: Activate or suspend a user
+  /api/v1/admin/analytics:
+    get:
+      summary: Get admin dashboard analytics
+  /api/v1/admin/guides/{guideId}/earnings:
+    get:
+      summary: Get guide engagement/earnings placeholder summary

@@ -5,6 +5,12 @@ import RegisterView from "../modules/auth-user/views/RegisterView.vue";
 import RequestResetView from "../modules/auth-user/views/RequestResetView.vue";
 import ConfirmResetView from "../modules/auth-user/views/ConfirmResetView.vue";
 import ProfileView from "../modules/auth-user/views/ProfileView.vue";
+import FavoritesView from "../modules/review-admin/views/FavoritesView.vue";
+import ReviewsView from "../modules/review-admin/views/ReviewsView.vue";
+import GuideVerificationView from "../modules/review-admin/views/GuideVerificationView.vue";
+import AdminDashboardView from "../modules/review-admin/views/AdminDashboardView.vue";
+import AdminVerificationsView from "../modules/review-admin/views/AdminVerificationsView.vue";
+import AdminUsersView from "../modules/review-admin/views/AdminUsersView.vue";
 
 const routes = [
   { path: "/", redirect: "/profile" },
@@ -36,7 +42,13 @@ const routes = [
     name: "booking-pay",
     component: () => import("../modules/booking-payment/views/PaymentView.vue"),
     meta: { requiresAuth: true }
-  }
+  },
+  { path: "/favorites", name: "favorites", component: FavoritesView, meta: { requiresAuth: true } },
+  { path: "/reviews", name: "reviews", component: ReviewsView, meta: { requiresAuth: true } },
+  { path: "/guide-verification", name: "guide-verification", component: GuideVerificationView, meta: { requiresAuth: true } },
+  { path: "/admin/dashboard", name: "admin-dashboard", component: AdminDashboardView, meta: { requiresAuth: true } },
+  { path: "/admin/verifications", name: "admin-verifications", component: AdminVerificationsView, meta: { requiresAuth: true } },
+  { path: "/admin/users", name: "admin-users", component: AdminUsersView, meta: { requiresAuth: true } }
 ];
 
 const router = createRouter({
@@ -44,8 +56,15 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const authStore = useAuthStore();
+  if (authStore.accessToken && !authStore.user) {
+    try {
+      await authStore.loadProfile();
+    } catch {
+      authStore.clearAuth();
+    }
+  }
   if (to.meta.requiresAuth && !authStore.accessToken) {
     return { name: "login" };
   }
