@@ -1,0 +1,442 @@
+openapi: 3.0.3
+info:
+  title: LocalGuide Guide and Tour API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080/api/v1
+paths:
+  /guides/{id}:
+    get:
+      summary: Get guide profile with tours
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuideProfileResponse'
+  /guides/me:
+    get:
+      summary: Get current guide profile with tours
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuideProfileResponse'
+    put:
+      summary: Update current guide profile
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGuideProfileRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuideSummaryResponse'
+
+  /guides/me/photo:
+    post:
+      summary: Upload current guide profile photo
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [ file ]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuidePhotoUploadResponse'
+
+  /guides/photo/{filename}:
+    get:
+      summary: Get guide profile photo file
+      parameters:
+        - in: path
+          name: filename
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+
+  /guides/me/tours:
+    get:
+      summary: List tours owned by current guide
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TourResponse'
+    post:
+      summary: Create a tour as current guide
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTourRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TourResponse'
+
+  /tours/{id}:
+    get:
+      summary: Get tour detail
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TourResponse'
+    put:
+      summary: Update a tour owned by current guide
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTourRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TourResponse'
+    delete:
+      summary: Delete a tour owned by current guide
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: No Content
+
+  /search/guides:
+    get:
+      summary: Search guides with filters and pagination
+      parameters:
+        - in: query
+          name: city
+          schema: { type: string }
+        - in: query
+          name: date
+          schema: { type: string, format: date }
+        - in: query
+          name: language
+          schema: { type: string }
+        - in: query
+          name: category
+          schema: { type: string }
+        - in: query
+          name: minPrice
+          schema: { type: number, format: decimal }
+        - in: query
+          name: maxPrice
+          schema: { type: number, format: decimal }
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 0 }
+        - in: query
+          name: size
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedGuideResponse'
+
+  /search/tours:
+    get:
+      summary: Search tours with filters and pagination
+      parameters:
+        - in: query
+          name: city
+          schema: { type: string }
+        - in: query
+          name: date
+          schema: { type: string, format: date }
+        - in: query
+          name: language
+          schema: { type: string }
+        - in: query
+          name: category
+          schema: { type: string }
+        - in: query
+          name: minPrice
+          schema: { type: number, format: decimal }
+        - in: query
+          name: maxPrice
+          schema: { type: number, format: decimal }
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 0 }
+        - in: query
+          name: size
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedTourResponse'
+
+  /guides/me/availability:
+    get:
+      summary: List current guide availability slots
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AvailabilitySlotResponse'
+    post:
+      summary: Create availability slot
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilitySlotRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilitySlotResponse'
+
+  /guides/me/availability/{id}:
+    put:
+      summary: Update availability slot
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilitySlotRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilitySlotResponse'
+    delete:
+      summary: Delete availability slot
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: No Content
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    UpdateGuideProfileRequest:
+      type: object
+      properties:
+        city: { type: string }
+        language: { type: string }
+        bio: { type: string }
+        photoUrl: { type: string }
+
+    GuideSummaryResponse:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        firstName: { type: string }
+        lastName: { type: string }
+        city: { type: string }
+        language: { type: string }
+        bio: { type: string }
+        photoUrl: { type: string }
+
+    GuidePhotoUploadResponse:
+      type: object
+      properties:
+        photoUrl: { type: string }
+
+    GuideProfileResponse:
+      allOf:
+        - $ref: '#/components/schemas/GuideSummaryResponse'
+        - type: object
+          properties:
+            tours:
+              type: array
+              items:
+                $ref: '#/components/schemas/TourResponse'
+
+    CreateTourRequest:
+      type: object
+      required: [ title, description, category, city, language, price, durationHours, groupSize ]
+      properties:
+        title: { type: string }
+        description: { type: string }
+        category: { type: string }
+        city: { type: string }
+        language: { type: string }
+        price: { type: number, format: decimal }
+        durationHours: { type: number, format: decimal }
+        groupSize: { type: integer }
+
+    UpdateTourRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateTourRequest'
+
+    TourResponse:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        guideId: { type: integer, format: int64 }
+        guideName: { type: string }
+        title: { type: string }
+        description: { type: string }
+        category: { type: string }
+        city: { type: string }
+        language: { type: string }
+        price: { type: number, format: decimal }
+        durationHours: { type: number, format: decimal }
+        groupSize: { type: integer }
+
+    PagedGuideResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuideSummaryResponse'
+        page: { type: integer }
+        size: { type: integer }
+        totalItems: { type: integer, format: int64 }
+        totalPages: { type: integer }
+
+    PagedTourResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TourResponse'
+        page: { type: integer }
+        size: { type: integer }
+        totalItems: { type: integer, format: int64 }
+        totalPages: { type: integer }
+
+    AvailabilitySlotRequest:
+      type: object
+      required: [ slotDate, startTime, endTime ]
+      properties:
+        slotDate: { type: string, format: date }
+        startTime: { type: string, format: time }
+        endTime: { type: string, format: time }
+
+    AvailabilitySlotResponse:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        guideId: { type: integer, format: int64 }
+        slotDate: { type: string, format: date }
+        startTime: { type: string, format: time }
+        endTime: { type: string, format: time }

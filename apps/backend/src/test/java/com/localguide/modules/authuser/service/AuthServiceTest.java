@@ -21,10 +21,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,11 +64,10 @@ class AuthServiceTest {
         assertEquals("test@example.com", response.user().email());
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(userCaptor.capture());
-        User saved = userCaptor.getValue();
-        assertEquals("test@example.com", saved.getEmail());
-        assertEquals("HASHED", saved.getPasswordHash());
-        assertNotNull(saved.getRefreshTokenHash());
+        verify(userRepository, atLeast(2)).save(userCaptor.capture());
+        assertTrue(userCaptor.getAllValues().stream().anyMatch(saved -> "test@example.com".equals(saved.getEmail())));
+        assertTrue(userCaptor.getAllValues().stream().anyMatch(saved -> "HASHED".equals(saved.getPasswordHash())));
+        assertTrue(userCaptor.getAllValues().stream().anyMatch(saved -> saved.getRefreshTokenHash() != null));
     }
 
     @Test
