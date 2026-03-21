@@ -23,6 +23,7 @@ import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import AuthCard from "../components/AuthCard.vue";
 import { useAuthStore } from "../../../shared/stores/auth";
+import { extractApiErrorMessage } from "../../../shared/utils/apiError";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -35,7 +36,7 @@ const handleSubmit = async () => {
     ElMessage.success("Login successful");
     router.push("/profile");
   } catch (error) {
-    ElMessage.error(error?.response?.data?.message || "Login failed");
+    ElMessage.error(extractApiErrorMessage(error, "Login failed"));
   }
 };
 </script>

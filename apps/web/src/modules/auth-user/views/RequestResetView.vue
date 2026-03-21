@@ -17,6 +17,7 @@ import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import AuthCard from "../components/AuthCard.vue";
 import { useAuthStore } from "../../../shared/stores/auth";
+import { extractApiErrorMessage } from "../../../shared/utils/apiError";
 
 const authStore = useAuthStore();
 const form = reactive({ email: "" });
@@ -28,7 +29,7 @@ const handleSubmit = async () => {
     submitted.value = true;
     ElMessage.success(data.message || "Reset request submitted");
   } catch (error) {
-    ElMessage.error(error?.response?.data?.message || "Reset request failed");
+    ElMessage.error(extractApiErrorMessage(error, "Reset request failed"));
   }
 };
 </script>
