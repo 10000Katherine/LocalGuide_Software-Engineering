@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/guides/me/verification")
+@RequestMapping("/api/v1/guide-verifications/me")
 public class VerificationController {
     private final VerificationService verificationService;
 

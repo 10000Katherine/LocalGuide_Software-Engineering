@@ -23,7 +23,7 @@ paths:
   /api/v1/guides/{guideId}/ratings/summary:
     get:
       summary: Get rating summary for a guide
-  /api/v1/guides/me/verification:
+  /api/v1/guide-verifications/me:
     get:
       summary: View current guide verification request
     post:

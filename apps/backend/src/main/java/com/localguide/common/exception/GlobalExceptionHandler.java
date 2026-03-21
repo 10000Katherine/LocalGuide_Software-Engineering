@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -25,8 +26,13 @@ public class GlobalExceptionHandler {
         for (FieldError error : exception.getBindingResult().getFieldErrors()) {
             fieldErrors.put(error.getField(), error.getDefaultMessage());
         }
+
+        String details = fieldErrors.entrySet().stream()
+                .map(entry -> entry.getKey() + ": " + entry.getValue())
+                .collect(Collectors.joining(" | "));
+
         Map<String, Object> body = new HashMap<>();
-        body.put("message", "Validation failed");
+        body.put("message", details.isEmpty() ? "Validation failed" : "Validation failed: " + details);
         body.put("errors", fieldErrors);
         return ResponseEntity.badRequest().body(body);
     }
