@@ -6,14 +6,13 @@
           <h1>My Bookings</h1>
           <p>Manage your schedule, payments, and booking statuses.</p>
         </div>
-        <el-button type="primary" @click="goCreate">Create Booking</el-button>
       </header>
 
       <el-skeleton v-if="store.loading" animated :rows="6" />
 
       <el-empty
         v-else-if="store.sortedBookings.length === 0"
-        description="No bookings yet. Create your first booking to continue." />
+        description="No bookings yet. Find a tour from Search and request booking to continue." />
 
       <div v-else class="booking-list">
         <BookingCard
@@ -38,7 +37,6 @@ import { useBookingPaymentStore } from "../stores/bookingPayment";
 const router = useRouter();
 const store = useBookingPaymentStore();
 
-const goCreate = () => router.push("/bookings/new");
 const goDetail = (id) => router.push(`/bookings/${id}`);
 const goPay = (id) => router.push(`/bookings/${id}/pay`);
 

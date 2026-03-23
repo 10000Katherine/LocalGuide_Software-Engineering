@@ -223,8 +223,8 @@ const submitBookingRequest = async () => {
     }
   }
 
-  if (authStore.user?.role === "GUIDE") {
-    ElMessage.warning("Guide accounts cannot request tour bookings.");
+  if (authStore.user?.role !== "TOURIST") {
+    ElMessage.warning("Only tourist accounts can request tour bookings.");
     return;
   }
 
@@ -247,7 +247,7 @@ const submitBookingRequest = async () => {
   } catch (error) {
     const status = error?.response?.status || error?.status;
     if (status === 404 || status === 405 || status === 501) {
-      ElMessage.warning("Booking request API is not available yet. Dev 3 will connect this endpoint.");
+      ElMessage.warning("Booking request service is temporarily unavailable. Please try again later.");
       return;
     }
     ElMessage.error(extractApiErrorMessage(error, "Failed to submit booking request"));

@@ -4,9 +4,9 @@
       <header class="panel-header">
         <div>
           <h1>Payment</h1>
-          <p>Confirm payment for booking #{{ route.params.id }}.</p>
+          <p>Confirm payment for Booking ID #{{ route.params.id }}.</p>
         </div>
-        <el-button plain @click="goDetail">Back to Detail</el-button>
+        <el-button plain @click="goDetail()">Back to Detail</el-button>
       </header>
 
       <el-alert
@@ -39,7 +39,7 @@
         </div>
 
         <div class="actions">
-          <el-button @click="goDetail">Back</el-button>
+          <el-button @click="goDetail()">Back</el-button>
           <el-button
             type="primary"
             :loading="store.actionLoading"
@@ -61,7 +61,6 @@ import { ElMessage } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import BookingStatusTag from "../components/BookingStatusTag.vue";
 import {
-  BOOKING_STATUS,
   PAYMENT_ENTRY_STATUSES
 } from "../constants/bookingStatus";
 import { useBookingPaymentStore } from "../stores/bookingPayment";
@@ -92,19 +91,19 @@ const maskedClientSecret = computed(() => {
   return `${clientSecret.slice(0, 4)}...${clientSecret.slice(-4)}`;
 });
 
-const goDetail = () => router.push(`/bookings/${route.params.id}`);
+const goDetail = (paymentSuccess = false) => {
+  if (paymentSuccess) {
+    router.push({ path: `/bookings/${route.params.id}`, query: { payment: "success" } });
+    return;
+  }
+  router.push(`/bookings/${route.params.id}`);
+};
 
 const canEnterPaymentFlow = (loadedBooking) => {
   if (!loadedBooking?.status) {
     return false;
   }
   if (!PAYMENT_ENTRY_STATUSES.has(loadedBooking.status)) {
-    return false;
-  }
-  if (
-    loadedBooking.status === BOOKING_STATUS.PENDING_PAYMENT
-    && !loadedBooking.stripePaymentIntentId
-  ) {
     return false;
   }
   return true;
@@ -133,8 +132,7 @@ const confirmPayment = async () => {
   try {
     await store.confirmPaymentSuccess(paymentIntentId.value);
     await store.fetchBooking(route.params.id);
-    ElMessage.success("Payment confirmed and booking updated");
-    goDetail();
+    goDetail(true);
   } catch (error) {
     ElMessage.error(error?.response?.data?.message || "Payment confirmation failed");
   }

@@ -105,10 +105,6 @@ export const useBookingPaymentStore = defineStore("bookingPayment", {
         return existingIntent;
       }
 
-      if (status === BOOKING_STATUS.PENDING_PAYMENT && !booking.stripePaymentIntentId) {
-        throw new Error("Payment intent is missing for this booking");
-      }
-
       if (!PAYMENT_INTENT_CREATION_STATUSES.has(status)) {
         throw new Error("Booking is not payable in current status");
       }
