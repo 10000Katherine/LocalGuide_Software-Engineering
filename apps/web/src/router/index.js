@@ -13,6 +13,7 @@ import GuideDashboardView from "../modules/guide-tour/views/GuideDashboardView.v
 import TourManagementView from "../modules/guide-tour/views/TourManagementView.vue";
 import AvailabilityCalendarView from "../modules/guide-tour/views/AvailabilityCalendarView.vue";
 import GuideWorkspaceView from "../modules/guide-tour/views/GuideWorkspaceView.vue";
+import GuideBookingRequestsView from "../modules/guide-tour/views/GuideBookingRequestsView.vue";
 import FavoritesView from "../modules/review-admin/views/FavoritesView.vue";
 import ReviewsView from "../modules/review-admin/views/ReviewsView.vue";
 import GuideVerificationView from "../modules/review-admin/views/GuideVerificationView.vue";
@@ -55,6 +56,12 @@ const routes = [
     meta: { requiresAuth: true, requiresGuide: true }
   },
   {
+    path: "/guide/booking-requests",
+    name: "guide-booking-requests",
+    component: GuideBookingRequestsView,
+    meta: { requiresAuth: true, requiresGuide: true }
+  },
+  {
     path: "/bookings",
     name: "booking-list",
     component: () => import("../modules/booking-payment/views/BookingListView.vue"),
@@ -81,9 +88,9 @@ const routes = [
   { path: "/favorites", name: "favorites", component: FavoritesView, meta: { requiresAuth: true } },
   { path: "/reviews", name: "reviews", component: ReviewsView, meta: { requiresAuth: true } },
   { path: "/guide-verification", name: "guide-verification", component: GuideVerificationView, meta: { requiresAuth: true } },
-  { path: "/admin/dashboard", name: "admin-dashboard", component: AdminDashboardView, meta: { requiresAuth: true } },
-  { path: "/admin/verifications", name: "admin-verifications", component: AdminVerificationsView, meta: { requiresAuth: true } },
-  { path: "/admin/users", name: "admin-users", component: AdminUsersView, meta: { requiresAuth: true } }
+  { path: "/admin/dashboard", name: "admin-dashboard", component: AdminDashboardView, meta: { requiresAuth: true, requiresAdmin: true } },
+  { path: "/admin/verifications", name: "admin-verifications", component: AdminVerificationsView, meta: { requiresAuth: true, requiresAdmin: true } },
+  { path: "/admin/users", name: "admin-users", component: AdminUsersView, meta: { requiresAuth: true, requiresAdmin: true } }
 ];
 
 const router = createRouter({
@@ -95,7 +102,10 @@ router.beforeEach(async (to) => {
   const authStore = useAuthStore();
   if (authStore.accessToken && !authStore.user) {
     try {
-      await authStore.loadProfile();
+      await authStore.refresh();
+      if (!authStore.user) {
+        await authStore.loadProfile();
+      }
     } catch {
       authStore.clearAuth();
     }
@@ -103,17 +113,26 @@ router.beforeEach(async (to) => {
 
   const isLoggedIn = Boolean(authStore.accessToken);
   const isGuide = authStore.user?.role === "GUIDE";
+  const isAdmin = authStore.user?.role === "ADMIN";
 
   if ((to.meta.requiresAuth || to.meta.requiresGuide) && !isLoggedIn) {
     return { name: "login" };
   }
 
   if (to.meta.requiresGuide && !isGuide) {
-    return { name: "profile" };
+    return isAdmin ? { name: "admin-dashboard" } : { name: "profile" };
+  }
+
+  if (to.meta.requiresAdmin && !isAdmin) {
+    return isGuide ? { name: "guide-dashboard" } : { name: "profile" };
   }
 
   if ((to.name === "login" || to.name === "register") && isLoggedIn) {
-    return isGuide ? { name: "guide-dashboard" } : { name: "profile" };
+    return isAdmin
+      ? { name: "admin-dashboard" }
+      : isGuide
+        ? { name: "guide-dashboard" }
+        : { name: "profile" };
   }
 
   return true;
