@@ -89,6 +89,246 @@ public class GuideTourDevDataLoader {
                             new SlotSeed(LocalDate.now().plusDays(5), LocalTime.of(13, 30), LocalTime.of(18, 0))
                     )
             );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.ottawa@localguide.dev", "Sophie", "Nguyen",
+                    "Ontario", "Ottawa", "ByWard Market", "English, French",
+                    "Capital city host focused on parliament history, museums, and riverside routes.",
+                    new BigDecimal("4.75"), 16,
+                    List.of(
+                            new TourSeed("Ottawa Parliament Walk", "A guided walk through Parliament Hill and key national landmarks.", "Historical", "Ontario", "Ottawa", "English", new BigDecimal("68.00"), new BigDecimal("2.00"), 10),
+                            new TourSeed("ByWard Food and Stories", "Taste local classics while learning stories from old Ottawa neighborhoods.", "Food", "Ontario", "Ottawa", "French", new BigDecimal("92.00"), new BigDecimal("2.50"), 8)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(1), LocalTime.of(11, 0), LocalTime.of(13, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(4), LocalTime.of(16, 0), LocalTime.of(18, 30))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.edmonton@localguide.dev", "Liam", "Rossi",
+                    "Alberta", "Edmonton", "Downtown", "English, Italian",
+                    "Festival-season specialist with local routes for arts, parks, and river valley trails.",
+                    new BigDecimal("4.65"), 14,
+                    List.of(
+                            new TourSeed("Edmonton River Valley Explorer", "Walk scenic trails with photo stops and local nature insights.", "Nature", "Alberta", "Edmonton", "English", new BigDecimal("74.00"), new BigDecimal("2.50"), 9),
+                            new TourSeed("Arts District Discovery", "Explore galleries, murals, and live local creative spaces.", "Cultural", "Alberta", "Edmonton", "English", new BigDecimal("84.00"), new BigDecimal("2.00"), 7)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(2), LocalTime.of(9, 0), LocalTime.of(11, 30)),
+                            new SlotSeed(LocalDate.now().plusDays(6), LocalTime.of(14, 30), LocalTime.of(17, 0))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.winnipeg@localguide.dev", "Maya", "Singh",
+                    "Manitoba", "Winnipeg", "Exchange District", "English, Punjabi",
+                    "Community-focused guide for heritage buildings, markets, and winter-friendly city routes.",
+                    new BigDecimal("4.55"), 10,
+                    List.of(
+                            new TourSeed("Exchange District Heritage Tour", "Discover iconic architecture and stories from old Winnipeg.", "Historical", "Manitoba", "Winnipeg", "English", new BigDecimal("66.00"), new BigDecimal("2.00"), 10),
+                            new TourSeed("Winnipeg Local Flavors Route", "A relaxed tasting route featuring independent local kitchens.", "Food", "Manitoba", "Winnipeg", "English", new BigDecimal("86.00"), new BigDecimal("2.50"), 8)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(3), LocalTime.of(10, 0), LocalTime.of(12, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(7), LocalTime.of(15, 0), LocalTime.of(17, 30))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.halifax@localguide.dev", "Emma", "MacLeod",
+                    "Nova Scotia", "Halifax", "Waterfront", "English",
+                    "Coastal storyteller offering harbor history, maritime culture, and relaxed boardwalk tours.",
+                    new BigDecimal("4.85"), 22,
+                    List.of(
+                            new TourSeed("Halifax Harbor Heritage Walk", "Learn maritime history along the waterfront and citadel area.", "Historical", "Nova Scotia", "Halifax", "English", new BigDecimal("71.00"), new BigDecimal("2.00"), 9),
+                            new TourSeed("Seaside Culture Evening", "An evening route with local music spots and ocean-view highlights.", "Cultural", "Nova Scotia", "Halifax", "English", new BigDecimal("98.00"), new BigDecimal("3.00"), 7)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(2), LocalTime.of(13, 0), LocalTime.of(15, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(5), LocalTime.of(18, 0), LocalTime.of(21, 0))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.victoria@localguide.dev", "Daniel", "Kim",
+                    "British Columbia", "Victoria", "Inner Harbour", "English, Korean",
+                    "Garden-city guide combining waterfront walks with hidden local neighborhoods.",
+                    new BigDecimal("4.78"), 18,
+                    List.of(
+                            new TourSeed("Victoria Harbour and Gardens", "A balanced route through harbor views and famous garden districts.", "City", "British Columbia", "Victoria", "English", new BigDecimal("76.00"), new BigDecimal("2.50"), 8),
+                            new TourSeed("Old Town Culinary Walk", "A culinary-focused stroll through historic streets and local cafes.", "Food", "British Columbia", "Victoria", "English", new BigDecimal("94.00"), new BigDecimal("3.00"), 7)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(1), LocalTime.of(8, 30), LocalTime.of(11, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(6), LocalTime.of(14, 0), LocalTime.of(17, 0))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.quebeccity@localguide.dev", "Camille", "Tremblay",
+                    "Quebec", "Quebec City", "Old Quebec", "French, English",
+                    "Old Quebec specialist offering architecture routes and local culture experiences.",
+                    new BigDecimal("4.88"), 24,
+                    List.of(
+                            new TourSeed("Old Quebec Fortifications Tour", "Walk UNESCO-listed fortifications with deep local context.", "Historical", "Quebec", "Quebec City", "French", new BigDecimal("79.00"), new BigDecimal("2.50"), 9),
+                            new TourSeed("Quebec Cultural Highlights", "Discover artisan lanes, viewpoints, and cultural landmarks.", "Cultural", "Quebec", "Quebec City", "French", new BigDecimal("101.00"), new BigDecimal("3.00"), 7)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(3), LocalTime.of(9, 30), LocalTime.of(12, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(8), LocalTime.of(16, 30), LocalTime.of(19, 30))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.saskatoon@localguide.dev", "Olivia", "Chen",
+                    "Saskatchewan", "Saskatoon", "Riversdale", "English, Mandarin",
+                    "River-city guide focused on art districts and prairie culture routes.",
+                    new BigDecimal("4.58"), 9,
+                    List.of(
+                            new TourSeed("Saskatoon Riverfront Walk", "A scenic route with architecture, bridges, and local stories.", "City", "Saskatchewan", "Saskatoon", "English", new BigDecimal("63.00"), new BigDecimal("2.00"), 10),
+                            new TourSeed("Prairie Food Discovery", "Try local prairie-inspired menus and community markets.", "Food", "Saskatchewan", "Saskatoon", "English", new BigDecimal("81.00"), new BigDecimal("2.50"), 8)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(2), LocalTime.of(10, 30), LocalTime.of(12, 30)),
+                            new SlotSeed(LocalDate.now().plusDays(6), LocalTime.of(15, 0), LocalTime.of(17, 30))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.regina@localguide.dev", "Ethan", "Brooks",
+                    "Saskatchewan", "Regina", "Cathedral", "English",
+                    "Regina local host with curated city-history and lakeside experience tours.",
+                    new BigDecimal("4.52"), 8,
+                    List.of(
+                            new TourSeed("Regina Heritage Loop", "Walk through key historical landmarks and local civic architecture.", "Historical", "Saskatchewan", "Regina", "English", new BigDecimal("61.00"), new BigDecimal("2.00"), 10),
+                            new TourSeed("Wascana Lake Experience", "Relaxed route around parks, viewpoints, and local stories.", "Nature", "Saskatchewan", "Regina", "English", new BigDecimal("79.00"), new BigDecimal("2.50"), 8)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(1), LocalTime.of(9, 0), LocalTime.of(11, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(7), LocalTime.of(14, 0), LocalTime.of(16, 30))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.stjohns@localguide.dev", "Harper", "O'Neill",
+                    "Newfoundland and Labrador", "St. John's", "Downtown", "English",
+                    "East-coast guide bringing harbor history and colorful street stories to life.",
+                    new BigDecimal("4.83"), 15,
+                    List.of(
+                            new TourSeed("St. John's Harbor History", "Explore harbor landmarks and historic neighborhoods by foot.", "Historical", "Newfoundland and Labrador", "St. John's", "English", new BigDecimal("73.00"), new BigDecimal("2.50"), 9),
+                            new TourSeed("Signal Hill and Coastal Views", "A guided route with dramatic viewpoints and local legends.", "Nature", "Newfoundland and Labrador", "St. John's", "English", new BigDecimal("97.00"), new BigDecimal("3.00"), 7)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(3), LocalTime.of(8, 30), LocalTime.of(11, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(8), LocalTime.of(15, 30), LocalTime.of(18, 30))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.charlottetown@localguide.dev", "Grace", "Murphy",
+                    "Prince Edward Island", "Charlottetown", "Waterfront", "English",
+                    "Island guide specializing in coastal culture, markets, and Confederation history.",
+                    new BigDecimal("4.67"), 12,
+                    List.of(
+                            new TourSeed("Charlottetown Confederation Tour", "Visit historic sites tied to Confederation and island heritage.", "Historical", "Prince Edward Island", "Charlottetown", "English", new BigDecimal("69.00"), new BigDecimal("2.00"), 10),
+                            new TourSeed("PEI Local Tastes Walk", "A tasting-focused route through waterfront and old town favorites.", "Food", "Prince Edward Island", "Charlottetown", "English", new BigDecimal("89.00"), new BigDecimal("2.50"), 8)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(2), LocalTime.of(11, 0), LocalTime.of(13, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(6), LocalTime.of(16, 0), LocalTime.of(18, 30))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.kelowna@localguide.dev", "Jack", "Foster",
+                    "British Columbia", "Kelowna", "Downtown", "English",
+                    "Okanagan guide for vineyard routes, lake views, and relaxed local experiences.",
+                    new BigDecimal("4.72"), 13,
+                    List.of(
+                            new TourSeed("Kelowna Lakeside Highlights", "A scenic tour of lakefront neighborhoods and panoramic stops.", "City", "British Columbia", "Kelowna", "English", new BigDecimal("77.00"), new BigDecimal("2.50"), 9),
+                            new TourSeed("Okanagan Taste Trail", "Sample regional flavors with stories from local producers.", "Food", "British Columbia", "Kelowna", "English", new BigDecimal("102.00"), new BigDecimal("3.00"), 7)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(1), LocalTime.of(9, 30), LocalTime.of(12, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(5), LocalTime.of(14, 30), LocalTime.of(17, 30))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.surrey@localguide.dev", "Avery", "Sharma",
+                    "British Columbia", "Surrey", "City Centre", "English, Hindi",
+                    "Metro Vancouver guide with family-friendly city and park routes.",
+                    new BigDecimal("4.49"), 7,
+                    List.of(
+                            new TourSeed("Surrey Urban Green Tour", "A balanced route through parks, plazas, and cultural spaces.", "City", "British Columbia", "Surrey", "English", new BigDecimal("64.00"), new BigDecimal("2.00"), 10),
+                            new TourSeed("South Asian Food Streets", "Explore neighborhood food hubs with local culinary insights.", "Food", "British Columbia", "Surrey", "English", new BigDecimal("87.00"), new BigDecimal("2.50"), 8)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(2), LocalTime.of(12, 0), LocalTime.of(14, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(7), LocalTime.of(17, 0), LocalTime.of(19, 30))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.hamilton@localguide.dev", "Mason", "Diaz",
+                    "Ontario", "Hamilton", "Westdale", "English, Spanish",
+                    "Waterfall-city guide offering escarpment views and local neighborhood routes.",
+                    new BigDecimal("4.61"), 11,
+                    List.of(
+                            new TourSeed("Hamilton Waterfall Route", "Visit iconic waterfalls and scenic lookout points near the city.", "Nature", "Ontario", "Hamilton", "English", new BigDecimal("78.00"), new BigDecimal("3.00"), 8),
+                            new TourSeed("Hamilton Arts and Industry", "A city route connecting public art and industrial heritage.", "Cultural", "Ontario", "Hamilton", "English", new BigDecimal("83.00"), new BigDecimal("2.50"), 8)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(3), LocalTime.of(9, 0), LocalTime.of(12, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(8), LocalTime.of(14, 0), LocalTime.of(17, 0))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.mississauga@localguide.dev", "Chloe", "Ahmed",
+                    "Ontario", "Mississauga", "Port Credit", "English, Arabic",
+                    "Lakeshore route expert with neighborhood culture and waterfront experiences.",
+                    new BigDecimal("4.56"), 9,
+                    List.of(
+                            new TourSeed("Port Credit Waterfront Walk", "Discover lakeshore stories, marinas, and local landmarks.", "City", "Ontario", "Mississauga", "English", new BigDecimal("67.00"), new BigDecimal("2.00"), 10),
+                            new TourSeed("Mississauga Culinary Night", "Evening food route with diverse local highlights.", "Food", "Ontario", "Mississauga", "English", new BigDecimal("91.00"), new BigDecimal("2.50"), 8)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(1), LocalTime.of(13, 0), LocalTime.of(15, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(6), LocalTime.of(18, 0), LocalTime.of(20, 30))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.laval@localguide.dev", "Logan", "Boucher",
+                    "Quebec", "Laval", "Centropolis", "French, English",
+                    "North-shore guide for local culture, parks, and urban family-friendly tours.",
+                    new BigDecimal("4.54"), 8,
+                    List.of(
+                            new TourSeed("Laval Urban Discovery", "Explore local landmarks and modern cultural districts.", "City", "Quebec", "Laval", "French", new BigDecimal("62.00"), new BigDecimal("2.00"), 10),
+                            new TourSeed("Laval Parks and Flavors", "A mixed route of green spaces and neighborhood dining spots.", "Nature", "Quebec", "Laval", "French", new BigDecimal("85.00"), new BigDecimal("2.50"), 8)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(2), LocalTime.of(10, 0), LocalTime.of(12, 0)),
+                            new SlotSeed(LocalDate.now().plusDays(7), LocalTime.of(15, 30), LocalTime.of(18, 0))
+                    )
+            );
+
+            seedGuide(userRepository, guideRepository, tourRepository, availabilitySlotRepository, passwordEncoder,
+                    "guide.burnaby@localguide.dev", "Nora", "Evans",
+                    "British Columbia", "Burnaby", "Metrotown", "English",
+                    "Local guide connecting urban parks, viewpoints, and neighborhood stories.",
+                    new BigDecimal("4.50"), 7,
+                    List.of(
+                            new TourSeed("Burnaby City and Parks", "An easy-paced route across city parks and skyline viewpoints.", "City", "British Columbia", "Burnaby", "English", new BigDecimal("60.00"), new BigDecimal("2.00"), 10),
+                            new TourSeed("Burnaby Mountain Sunset", "Evening route featuring panoramic views and local highlights.", "Nature", "British Columbia", "Burnaby", "English", new BigDecimal("88.00"), new BigDecimal("2.50"), 8)
+                    ),
+                    List.of(
+                            new SlotSeed(LocalDate.now().plusDays(3), LocalTime.of(12, 30), LocalTime.of(14, 30)),
+                            new SlotSeed(LocalDate.now().plusDays(9), LocalTime.of(17, 30), LocalTime.of(20, 0))
+                    )
+            );
         };
     }
 
