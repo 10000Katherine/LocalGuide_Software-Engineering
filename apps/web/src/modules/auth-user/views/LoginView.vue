@@ -32,8 +32,16 @@ const form = reactive({ email: "", password: "" });
 const handleSubmit = async () => {
   try {
     await authStore.login(form);
-    await authStore.loadProfile();
     ElMessage.success("Login successful");
+    const role = authStore.user?.role;
+    if (role === "ADMIN") {
+      router.push("/admin/dashboard");
+      return;
+    }
+    if (role === "GUIDE") {
+      router.push("/guide/dashboard");
+      return;
+    }
     router.push("/profile");
   } catch (error) {
     ElMessage.error(extractApiErrorMessage(error, "Login failed"));
