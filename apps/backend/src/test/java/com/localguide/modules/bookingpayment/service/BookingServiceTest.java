@@ -124,7 +124,7 @@ class BookingServiceTest {
 
     @Test
     void createPaymentIntentUpdatesBookingAndPayment() {
-        Booking booking = booking(10L, "tourist@example.com", BookingStatus.CREATED, new BigDecimal("100.00"), "");
+        Booking booking = booking(10L, "tourist@example.com", BookingStatus.PENDING_PAYMENT, new BigDecimal("100.00"), "");
         when(bookingRepository.findByIdAndTouristEmail(10L, "tourist@example.com")).thenReturn(Optional.of(booking));
         when(paymentGatewayPort.createPaymentIntent(10L, new BigDecimal("100.00")))
                 .thenReturn(new PaymentGatewayPort.PaymentIntentResult("pi_test_10", "cs_test_10"));
