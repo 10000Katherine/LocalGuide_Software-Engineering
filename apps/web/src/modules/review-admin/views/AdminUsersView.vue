@@ -23,7 +23,11 @@
             <td>{{ user.active ? 'Yes' : 'No' }}</td>
             <td>{{ user.verificationStatus }}</td>
             <td>
-              <button @click="toggle(user)">{{ user.active ? 'Suspend' : 'Activate' }}</button>
+              <button
+                :class="user.active ? 'btn-suspend' : 'btn-activate'"
+                @click="toggle(user)">
+                {{ user.active ? 'Suspend' : 'Activate' }}
+              </button>
             </td>
           </tr>
         </tbody>
@@ -67,7 +71,9 @@ onMounted(loadUsers);
 .page { padding: 32px; }
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: left; }
-button { padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; background: #0f172a; color: white; cursor: pointer; }
+button { padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1; color: white; cursor: pointer; }
+.btn-suspend { background: #b91c1c; border-color: #991b1b; }
+.btn-activate { background: #047857; border-color: #065f46; }
 .message { color: #0f766e; }
 .empty { color: #64748b; }
 </style>

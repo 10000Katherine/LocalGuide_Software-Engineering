@@ -2,6 +2,7 @@ package com.localguide.modules.bookingpayment.service;
 
 import com.localguide.common.exception.ApiException;
 import com.localguide.modules.authuser.domain.User;
+import com.localguide.modules.authuser.domain.UserRole;
 import com.localguide.modules.authuser.repository.UserRepository;
 import com.localguide.modules.bookingpayment.domain.Booking;
 import com.localguide.modules.bookingpayment.domain.BookingStatus;
@@ -13,6 +14,10 @@ import com.localguide.modules.bookingpayment.dto.CreateBookingRequest;
 import com.localguide.modules.bookingpayment.dto.CreatePaymentIntentRequest;
 import com.localguide.modules.bookingpayment.dto.PaymentIntentResponse;
 import com.localguide.modules.bookingpayment.dto.PaymentWebhookRequest;
+import com.localguide.modules.guidetour.domain.Guide;
+import com.localguide.modules.guidetour.domain.Tour;
+import com.localguide.modules.guidetour.repository.GuideRepository;
+import com.localguide.modules.guidetour.repository.TourRepository;
 import com.localguide.modules.bookingpayment.port.AvailabilityPort;
 import com.localguide.modules.bookingpayment.port.NotificationPort;
 import com.localguide.modules.bookingpayment.port.PaymentGatewayPort;
@@ -43,6 +48,8 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
+    private final GuideRepository guideRepository;
+    private final TourRepository tourRepository;
     private final AvailabilityPort availabilityPort;
     private final PaymentGatewayPort paymentGatewayPort;
     private final NotificationPort notificationPort;
@@ -51,6 +58,8 @@ public class BookingService {
             BookingRepository bookingRepository,
             PaymentRepository paymentRepository,
             UserRepository userRepository,
+            GuideRepository guideRepository,
+            TourRepository tourRepository,
             AvailabilityPort availabilityPort,
             PaymentGatewayPort paymentGatewayPort,
             NotificationPort notificationPort
@@ -58,6 +67,8 @@ public class BookingService {
         this.bookingRepository = bookingRepository;
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
+        this.guideRepository = guideRepository;
+        this.tourRepository = tourRepository;
         this.availabilityPort = availabilityPort;
         this.paymentGatewayPort = paymentGatewayPort;
         this.notificationPort = notificationPort;
@@ -111,7 +122,8 @@ public class BookingService {
     public PaymentIntentResponse createPaymentIntent(String touristEmail, CreatePaymentIntentRequest request) {
         Booking booking = findMyBooking(touristEmail, request.bookingId());
 
-        if (booking.getStatus() != BookingStatus.CREATED && booking.getStatus() != BookingStatus.PAYMENT_FAILED) {
+        if (booking.getStatus() != BookingStatus.PENDING_PAYMENT
+                && booking.getStatus() != BookingStatus.PAYMENT_FAILED) {
             throw new ApiException(HttpStatus.CONFLICT, "Booking is not payable in current status");
         }
 
@@ -198,15 +210,84 @@ public class BookingService {
         return new ApiMessageResponse("Booking cancelled successfully");
     }
 
+    public List<BookingResponse> listGuideBookingRequests(String guideEmail) {
+        List<Long> guideTourIds = findGuideTourIds(guideEmail);
+        if (guideTourIds.isEmpty()) {
+            return List.of();
+        }
+
+        return bookingRepository.findByTourIdInOrderByBookingDateDescStartTimeDesc(guideTourIds)
+                .stream()
+                .map(BookingResponse::from)
+                .toList();
+    }
+
+    @Transactional
+    public BookingResponse acceptBookingRequest(String guideEmail, Long bookingId) {
+        Booking booking = findGuideOwnedBooking(guideEmail, bookingId);
+        if (booking.getStatus() != BookingStatus.CREATED) {
+            throw new ApiException(HttpStatus.CONFLICT, "Only CREATED bookings can be accepted");
+        }
+
+        booking.setStatus(BookingStatus.PENDING_PAYMENT);
+        Booking saved = bookingRepository.save(booking);
+        return BookingResponse.from(saved);
+    }
+
+    @Transactional
+    public BookingResponse declineBookingRequest(String guideEmail, Long bookingId) {
+        Booking booking = findGuideOwnedBooking(guideEmail, bookingId);
+        if (!isGuideDeclineAllowed(booking.getStatus())) {
+            throw new ApiException(HttpStatus.CONFLICT, "Booking cannot be declined in current status");
+        }
+
+        booking.setStatus(BookingStatus.CANCELLED_BY_GUIDE);
+        Booking saved = bookingRepository.save(booking);
+        return BookingResponse.from(saved);
+    }
+
     private Booking findMyBooking(String touristEmail, Long bookingId) {
         return bookingRepository.findByIdAndTouristEmail(bookingId, touristEmail)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Booking not found"));
+    }
+
+    private Booking findGuideOwnedBooking(String guideEmail, Long bookingId) {
+        List<Long> guideTourIds = findGuideTourIds(guideEmail);
+        if (guideTourIds.isEmpty()) {
+            throw new ApiException(HttpStatus.NOT_FOUND, "Guide has no tours");
+        }
+
+        return bookingRepository.findByIdAndTourIdIn(bookingId, guideTourIds)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Booking not found for this guide"));
+    }
+
+    private List<Long> findGuideTourIds(String guideEmail) {
+        User guideUser = userRepository.findByEmail(guideEmail)
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Guide user not found"));
+
+        if (guideUser.getRole() != UserRole.GUIDE) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "Guide role required");
+        }
+
+        Guide guide = guideRepository.findByUserId(guideUser.getId())
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Guide profile not found"));
+
+        return tourRepository.findByGuideIdOrderByCreatedAtDesc(guide.getId())
+                .stream()
+                .map(Tour::getId)
+                .toList();
     }
 
     private boolean isCancellable(BookingStatus status) {
         return status == BookingStatus.CREATED
                 || status == BookingStatus.PENDING_PAYMENT
                 || status == BookingStatus.CONFIRMED
+                || status == BookingStatus.PAYMENT_FAILED;
+    }
+
+    private boolean isGuideDeclineAllowed(BookingStatus status) {
+        return status == BookingStatus.CREATED
+                || status == BookingStatus.PENDING_PAYMENT
                 || status == BookingStatus.PAYMENT_FAILED;
     }
 }

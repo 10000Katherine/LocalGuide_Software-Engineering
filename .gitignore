@@ -1,5 +1,6 @@
 # Backend
 apps/backend/target/
+apps/backend/uploads/
 
 # Frontend
 apps/web/node_modules/

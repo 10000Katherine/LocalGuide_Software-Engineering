@@ -3,7 +3,7 @@
     <section class="panel">
       <header class="panel-header">
         <div>
-          <h1>Booking #{{ booking?.id || route.params.id }}</h1>
+          <h1>Booking ID #{{ booking?.id || route.params.id }}</h1>
           <p>Check current status, payment intent, and actions.</p>
         </div>
         <el-button plain @click="goBack">Back to List</el-button>
@@ -103,6 +103,13 @@ const cancelBookingAction = async () => {
 };
 
 onMounted(loadBooking);
+
+onMounted(() => {
+  if (route.query.payment === "success") {
+    ElMessage.success("Payment completed successfully");
+    router.replace({ path: `/bookings/${route.params.id}` });
+  }
+});
 </script>
 
 <style scoped>

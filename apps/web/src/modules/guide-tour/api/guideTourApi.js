@@ -111,6 +111,27 @@ export async function listMyConfirmedBookingRequests() {
   return [];
 }
 
+export async function listGuideBookingRequests(params = {}) {
+  const { data } = await apiClient.get("/bookings/guides/me/requests", { params });
+  if (Array.isArray(data)) {
+    return data;
+  }
+  if (Array.isArray(data?.items)) {
+    return data.items;
+  }
+  return [];
+}
+
+export async function acceptGuideBookingRequest(bookingId) {
+  const { data } = await apiClient.put(`/bookings/guides/me/requests/${bookingId}/accept`);
+  return data;
+}
+
+export async function declineGuideBookingRequest(bookingId) {
+  const { data } = await apiClient.put(`/bookings/guides/me/requests/${bookingId}/decline`);
+  return data;
+}
+
 export async function createBookingRequest(payload) {
   const candidates = ["/bookings", "/bookings/requests"];
 

@@ -2,10 +2,10 @@
   <main class="workspace-page">
     <section class="workspace-wrap">
       <header class="hero">
-        <p class="eyebrow">Developer 2 Workspace</p>
+        <p class="eyebrow">Guide Workspace</p>
         <h1>Guide Control Center</h1>
         <p class="sub">
-          Access all Dev 2 guide features from one place: tours, availability, dashboard, and your public profile.
+          Access all guide features from one place: tours, availability, dashboard, and your public profile.
         </p>
       </header>
 
@@ -26,6 +26,12 @@
           <h2>Availability Calendar</h2>
           <p>Set available dates and time slots for tourist bookings.</p>
           <router-link class="action" to="/guide/availability">Manage Availability</router-link>
+        </article>
+
+        <article class="card">
+          <h2>Booking Requests</h2>
+          <p>Review incoming booking requests and decide to accept or decline.</p>
+          <router-link class="action" to="/guide/booking-requests">Manage Requests</router-link>
         </article>
 
         <article class="card">

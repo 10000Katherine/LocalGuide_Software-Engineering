@@ -104,6 +104,7 @@ import {
   getTourDetail,
   listGuideAvailability
 } from "../api/guideTourApi";
+import { extractApiErrorMessage } from "../../../shared/utils/apiError";
 
 const route = useRoute();
 const router = useRouter();
@@ -143,6 +144,17 @@ const formatMinutes = (minutes) => {
   const hours = String(Math.floor(minutes / 60)).padStart(2, "0");
   const mins = String(minutes % 60).padStart(2, "0");
   return hours + ":" + mins;
+};
+
+const normalizeTimeForApi = (value) => {
+  const text = String(value || "").trim();
+  if (!text) {
+    return text;
+  }
+  if (/^\d{2}:\d{2}$/.test(text)) {
+    return `${text}:00`;
+  }
+  return text;
 };
 
 const timeOptions = computed(() => {
@@ -211,8 +223,8 @@ const submitBookingRequest = async () => {
     }
   }
 
-  if (authStore.user?.role === "GUIDE") {
-    ElMessage.warning("Guide accounts cannot request tour bookings.");
+  if (authStore.user?.role !== "TOURIST") {
+    ElMessage.warning("Only tourist accounts can request tour bookings.");
     return;
   }
 
@@ -223,20 +235,22 @@ const submitBookingRequest = async () => {
 
   requesting.value = true;
   try {
+    const calculatedTotal = Number(totalPrice.value.toFixed(2));
     await createBookingRequest({
       tourId: Number(route.params.id),
       bookingDate: selectedDate.value,
-      startTime: selectedTime.value,
-      numPeople: Number(peopleCount.value)
+      startTime: normalizeTimeForApi(selectedTime.value),
+      numPeople: Number(peopleCount.value),
+      totalPrice: calculatedTotal
     });
     ElMessage.success("Booking request submitted.");
   } catch (error) {
     const status = error?.response?.status || error?.status;
     if (status === 404 || status === 405 || status === 501) {
-      ElMessage.warning("Booking request API is not available yet. Dev 3 will connect this endpoint.");
+      ElMessage.warning("Booking request service is temporarily unavailable. Please try again later.");
       return;
     }
-    ElMessage.error(error?.response?.data?.message || "Failed to submit booking request");
+    ElMessage.error(extractApiErrorMessage(error, "Failed to submit booking request"));
   } finally {
     requesting.value = false;
   }

@@ -14,6 +14,7 @@
         <router-link v-if="isGuide" to="/guide/dashboard">Dashboard</router-link>
         <router-link v-if="isGuide" to="/guide/tours">My Tours</router-link>
         <router-link v-if="isGuide" to="/guide/availability">Availability</router-link>
+        <router-link v-if="isGuide" to="/guide/booking-requests">Booking Requests</router-link>
         <router-link v-if="authStore.user?.role === 'GUIDE'" to="/guide-verification">Guide Verification</router-link>
 
         <router-link v-if="authStore.user?.role === 'ADMIN'" to="/admin/dashboard">Admin Dashboard</router-link>
@@ -33,7 +34,7 @@
 
     <footer class="footer">
       <span>LocalGuide Connect</span>
-      <span>Dev1 auth-user · Dev2 guide-tour · Dev3 booking-payment · Dev4 review-admin</span>
+      <span>Connect with verified local guides across Canada</span>
     </footer>
   </div>
 </template>
@@ -49,8 +50,8 @@ const authStore = useAuthStore();
 const isGuide = computed(() => authStore.user?.role === "GUIDE");
 const isLoggedIn = computed(() => Boolean(authStore.accessToken));
 const isGuest = computed(() => !isLoggedIn.value);
-const isTourist = computed(() => isLoggedIn.value && authStore.user?.role !== "GUIDE");
-const showTouristNav = computed(() => !isGuide.value);
+const isTourist = computed(() => authStore.user?.role === "TOURIST");
+const showTouristNav = computed(() => isGuest.value || isTourist.value);
 
 const goHome = () => {
   if (authStore.user?.role === "ADMIN") {

@@ -23,6 +23,7 @@ import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import AuthCard from "../components/AuthCard.vue";
 import { useAuthStore } from "../../../shared/stores/auth";
+import { extractApiErrorMessage } from "../../../shared/utils/apiError";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -31,11 +32,19 @@ const form = reactive({ email: "", password: "" });
 const handleSubmit = async () => {
   try {
     await authStore.login(form);
-    await authStore.loadProfile();
     ElMessage.success("Login successful");
+    const role = authStore.user?.role;
+    if (role === "ADMIN") {
+      router.push("/admin/dashboard");
+      return;
+    }
+    if (role === "GUIDE") {
+      router.push("/guide/dashboard");
+      return;
+    }
     router.push("/profile");
   } catch (error) {
-    ElMessage.error(error?.response?.data?.message || "Login failed");
+    ElMessage.error(extractApiErrorMessage(error, "Login failed"));
   }
 };
 </script>

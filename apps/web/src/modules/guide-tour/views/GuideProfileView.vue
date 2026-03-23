@@ -24,11 +24,19 @@
             <div v-if="isOwnGuideProfile" class="header-action">
               <el-button type="primary" @click="goToEditProfile">Edit Profile</el-button>
             </div>
+            <div v-else-if="canFavorite" class="header-action">
+              <el-button
+                plain
+                :type="favoritesStore.isFavorite(guide.id) ? 'danger' : 'info'"
+                @click="toggleFavorite(guide.id)">
+                {{ favoritesStore.isFavorite(guide.id) ? "Unfavorite" : "Add to Favorites" }}
+              </el-button>
+            </div>
           </header>
 
           <section class="bio">
             <h2>About</h2>
-            <p>{{ guide.bio || "Guide bio will be updated soon." }}</p>
+            <p>{{ guide.bio || "No bio provided yet." }}</p>
           </section>
 
           <section>
@@ -47,8 +55,18 @@
 
           <section class="reviews">
             <h2>Reviews</h2>
-            <p class="reviews-note">Review APIs are handled in Dev 4. This section is ready for integration.</p>
-            <el-empty description="No reviews yet" />
+            <p class="reviews-note">Traveler feedback appears here after completed tours.</p>
+            <div v-if="reviews.length" class="reviews-list">
+              <article v-for="review in reviews" :key="review.id" class="review-item">
+                <div class="review-head">
+                  <strong>{{ review.touristName }}</strong>
+                  <span>{{ formatReviewDate(review.createdAt) }}</span>
+                </div>
+                <p class="review-meta">Rating: {{ review.rating }}/5 · Booking {{ review.bookingReference }}</p>
+                <p>{{ review.comment }}</p>
+              </article>
+            </div>
+            <el-empty v-else description="No reviews yet" />
           </section>
         </section>
       </template>
@@ -61,14 +79,18 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { useAuthStore } from "../../../shared/stores/auth";
+import { useFavoritesStore } from "../../../shared/stores/favorites";
 import { getGuideProfile, getMyGuideProfile } from "../api/guideTourApi";
+import { reviewAdminApi } from "../../review-admin/api/reviewAdminApi";
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const favoritesStore = useFavoritesStore();
 
 const guide = ref(null);
 const myGuideId = ref(null);
+const reviews = ref([]);
 const loading = ref(true);
 const errorMessage = ref("");
 
@@ -94,8 +116,19 @@ const isOwnGuideProfile = computed(() => {
   return Number(guide.value.id) === Number(myGuideId.value);
 });
 
+const canFavorite = computed(() => authStore.user?.role === "TOURIST");
+
 const goToEditProfile = () => {
   router.push("/guide/dashboard");
+};
+
+const toggleFavorite = async (guideId) => {
+  try {
+    const becameFavorite = await favoritesStore.toggleFavorite(guideId);
+    ElMessage.success(becameFavorite ? "Guide added to favorites" : "Guide removed from favorites");
+  } catch (error) {
+    ElMessage.error(error?.response?.data?.message || "Failed to update favorite");
+  }
 };
 
 const loadViewerContext = async () => {
@@ -105,16 +138,10 @@ const loadViewerContext = async () => {
   }
 
   try {
-    if (!authStore.user) {
-      await authStore.loadProfile();
-    }
-    if (authStore.user?.role !== "GUIDE") {
-      myGuideId.value = null;
-      return;
-    }
     const profile = await getMyGuideProfile();
     myGuideId.value = profile?.id || null;
-  } catch {
+  } catch (error) {
+    void error;
     myGuideId.value = null;
   }
 };
@@ -123,9 +150,19 @@ const loadGuide = async () => {
   loading.value = true;
   errorMessage.value = "";
   guide.value = null;
+  reviews.value = [];
 
   try {
-    guide.value = await getGuideProfile(route.params.id);
+    const guideProfile = await getGuideProfile(route.params.id);
+    guide.value = guideProfile;
+
+    try {
+      const reviewResponse = await reviewAdminApi.listGuideReviews(route.params.id);
+      reviews.value = Array.isArray(reviewResponse?.data) ? reviewResponse.data : [];
+    } catch (reviewError) {
+      void reviewError;
+      reviews.value = [];
+    }
   } catch (error) {
     const message = error?.response?.data?.message || "Failed to load guide profile";
     errorMessage.value = message;
@@ -135,8 +172,32 @@ const loadGuide = async () => {
   }
 };
 
+const formatReviewDate = (value) => {
+  if (!value) {
+    return "Recent";
+  }
+  return String(value).slice(0, 10);
+};
+
 watch(() => route.params.id, loadGuide, { immediate: true });
 onMounted(loadViewerContext);
+onMounted(async () => {
+  if (authStore.accessToken && !authStore.user) {
+    try {
+      await authStore.loadProfile();
+    } catch {
+      return;
+    }
+  }
+
+  if (canFavorite.value) {
+    try {
+      await favoritesStore.loadFavorites();
+    } catch (error) {
+      ElMessage.warning(error?.response?.data?.message || "Favorites are temporarily unavailable");
+    }
+  }
+});
 </script>
 
 <style scoped>
@@ -248,6 +309,28 @@ onMounted(loadViewerContext);
 .reviews-note {
   color: #64748b;
   margin-bottom: 8px;
+}
+
+.reviews-list {
+  display: grid;
+  gap: 10px;
+}
+
+.review-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.review-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.review-meta {
+  color: #475569;
+  margin: 6px 0;
 }
 
 @media (max-width: 720px) {

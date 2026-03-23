@@ -2,8 +2,8 @@
   <el-card class="booking-card" shadow="hover">
     <div class="card-header">
       <div>
-        <h3>Booking #{{ booking.id }}</h3>
-        <p>Tour {{ booking.tourId }} · {{ booking.bookingDate }} {{ timeDisplay }}</p>
+        <h3>Booking ID #{{ booking.id }}</h3>
+        <p>Tour ID {{ booking.tourId }} · {{ booking.bookingDate }} {{ timeDisplay }}</p>
       </div>
       <BookingStatusTag :status="booking.status" />
     </div>

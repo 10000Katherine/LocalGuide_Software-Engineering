@@ -20,6 +20,7 @@
               v-model="form.bookingDate"
               type="date"
               value-format="YYYY-MM-DD"
+              :disabled-date="disablePastDates"
               placeholder="Select date"
               class="full" />
           </el-form-item>
@@ -59,6 +60,7 @@ import { computed, reactive } from "vue";
 import { ElMessage } from "element-plus";
 import { useRoute, useRouter } from "vue-router";
 import { useBookingPaymentStore } from "../stores/bookingPayment";
+import { extractApiErrorMessage } from "../../../shared/utils/apiError";
 
 const route = useRoute();
 const router = useRouter();
@@ -80,6 +82,23 @@ const totalPriceDisplay = computed(() => totalPrice.value.toFixed(2));
 
 const goBack = () => {
   router.push("/bookings");
+};
+
+const disablePastDates = (date) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return date.getTime() < today.getTime();
+};
+
+const normalizeTime = (timeValue) => {
+  if (!timeValue) {
+    return "";
+  }
+  const value = String(timeValue).trim();
+  if (/^\d{2}:\d{2}$/.test(value)) {
+    return `${value}:00`;
+  }
+  return value;
 };
 
 const submit = async () => {
@@ -108,14 +127,14 @@ const submit = async () => {
     const booking = await store.submitBooking({
       tourId: Number(form.tourId),
       bookingDate: form.bookingDate,
-      startTime: form.startTime,
+      startTime: normalizeTime(form.startTime),
       numPeople: Number(form.numPeople),
       totalPrice: Number(totalPriceDisplay.value)
     });
     ElMessage.success("Booking created");
     router.push(`/bookings/${booking.id}`);
   } catch (error) {
-    ElMessage.error(error?.response?.data?.message || "Failed to create booking");
+    ElMessage.error(extractApiErrorMessage(error, "Failed to create booking"));
   }
 };
 </script>

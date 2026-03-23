@@ -21,6 +21,7 @@ import { ElMessage } from "element-plus";
 import { useRouter } from "vue-router";
 import AuthCard from "../components/AuthCard.vue";
 import { useAuthStore } from "../../../shared/stores/auth";
+import { extractApiErrorMessage } from "../../../shared/utils/apiError";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -32,7 +33,7 @@ const handleSubmit = async () => {
     ElMessage.success(data.message || "Password updated");
     router.push("/login");
   } catch (error) {
-    ElMessage.error(error?.response?.data?.message || "Reset confirmation failed");
+    ElMessage.error(extractApiErrorMessage(error, "Reset confirmation failed"));
   }
 };
 </script>

@@ -23,10 +23,10 @@ export const reviewAdminApi = {
     return apiClient.put(`/reviews/${reviewId}/reply`, { reply });
   },
   submitVerification(payload) {
-    return apiClient.post("/guides/me/verification", payload);
+    return apiClient.post("/guide-verifications/me", payload);
   },
   getMyVerification() {
-    return apiClient.get("/guides/me/verification");
+    return apiClient.get("/guide-verifications/me");
   },
   listPendingVerifications() {
     return apiClient.get("/admin/verifications");
