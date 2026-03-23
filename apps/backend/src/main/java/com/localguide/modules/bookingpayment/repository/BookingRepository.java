@@ -17,6 +17,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     Optional<Booking> findByStripePaymentIntentId(String stripePaymentIntentId);
 
+    List<Booking> findByTourIdInOrderByBookingDateDescStartTimeDesc(Collection<Long> tourIds);
+
+    Optional<Booking> findByIdAndTourIdIn(Long id, Collection<Long> tourIds);
+
     boolean existsByTourIdAndBookingDateAndStartTimeAndStatusIn(
             Long tourId,
             LocalDate bookingDate,

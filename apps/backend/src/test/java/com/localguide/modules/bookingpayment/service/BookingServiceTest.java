@@ -16,6 +16,8 @@ import com.localguide.modules.bookingpayment.port.NotificationPort;
 import com.localguide.modules.bookingpayment.port.PaymentGatewayPort;
 import com.localguide.modules.bookingpayment.repository.BookingRepository;
 import com.localguide.modules.bookingpayment.repository.PaymentRepository;
+import com.localguide.modules.guidetour.repository.GuideRepository;
+import com.localguide.modules.guidetour.repository.TourRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +48,10 @@ class BookingServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
+    private GuideRepository guideRepository;
+    @Mock
+    private TourRepository tourRepository;
+    @Mock
     private AvailabilityPort availabilityPort;
     @Mock
     private PaymentGatewayPort paymentGatewayPort;
@@ -60,6 +66,8 @@ class BookingServiceTest {
                 bookingRepository,
                 paymentRepository,
                 userRepository,
+                guideRepository,
+                tourRepository,
                 availabilityPort,
                 paymentGatewayPort,
                 notificationPort

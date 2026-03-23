@@ -44,7 +44,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleUnexpected(Exception exception) {
+        exception.printStackTrace();
+        String detail = exception.getMessage() == null || exception.getMessage().isBlank()
+                ? "Unexpected server error"
+                : "Unexpected server error: " + exception.getMessage();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", "Unexpected server error"));
+                .body(Map.of("message", detail));
     }
 }
