@@ -7,17 +7,19 @@ LocalGuide Connect is a Consumer-to-Consumer (C2C) tour guide booking platform f
 Our mission is to build a transparent, AI-powered marketplace that benefits both travelers seeking authentic local experiences and professional guides who want to establish sustainable businesses without excessive platform fees.
 
 ## 💎 Core Value Propositions
-- [cite_start]**Affordable Access**: Low commission model (12% vs industry standard 20-30%). 
-- [cite_start]**Smart Discovery**: AI-powered search to reduce booking time from hours to minutes. 
-- [cite_start]**Authentic Experiences**: Focus on hidden cultural treasures and local lifestyles. 
-- [cite_start]**Verified Trust**: Transparent pricing and verified guide credentials for traveler safety.
+- **Affordable Access**: Low commission model (12% vs industry standard 20-30%).
+- **Smart Discovery**: Smart search and filtering to reduce booking time.
+- **Authentic Experiences**: Focus on hidden cultural treasures and local lifestyles.
+- **Verified Trust**: Transparent pricing and verified guide credentials for traveler safety.
 
 ## 📂 Project Documentation
 For detailed information regarding our project requirements, business case, and development roadmap, please refer to the following resources:
 
-- **📄 Project Proposal (Full Report)**: [LocalGuide-Group3-proposal.pdf](./docs/proposal/LocalGuide-Group3-proposal.pdf)
+- **📄 Project Proposal 1**: [LocalGuide-Group3-proposal.pdf](./docs/proposal1/LocalGuide-Group3-proposal.pdf)
+- **📄 Project Proposal 2**: [LocalGuide-Group3-proposal2.pdf](./docs/proposal2/LocalGuide-Group3-proposal2.pdf)
 - **☁️ Requirements & Design Document**: [Google Docs Link](https://docs.google.com/document/d/1ccwN8AG62yl9nib6weKiWco2B2Lt0h56zSaBtOYWsWg/edit?tab=t.0)
 - **🎥 Product Demo & Presentation**: [Online Video Link](https://drive.google.com/file/d/1kuOv6p57LE3pItfNREmhj3w_pTsPurky/view?usp=drive_link)
+- **🚀 Team Testing Quickstart**: [team-testing-quickstart.md](./docs/team-testing-quickstart.md)
 
 ## 📅 Roadmap Overview
 This project follows an **Agile/Scrum** methodology with a 12-week development timeline, focusing on delivering a Minimum Viable Product (MVP) that includes core features for tourists, guides, and administrators. 
@@ -27,10 +29,10 @@ To support parallel collaboration, the repository uses a module-based folder str
 
 ```text
 apps/backend/src/main/java/com/localguide/modules/
-  auth-user/        -> Dev1 (Auth and User)
-  guide-tour/       -> Dev2 (Guide, Tour, Search, Availability)
-  booking-payment/  -> Dev3 (Booking, Payment, Notification)
-  review-admin/     -> Dev4 (Review, Favorites, Admin)
+  authuser/         -> Dev1 (Auth and User)
+  guidetour/        -> Dev2 (Guide, Tour, Search, Availability)
+  bookingpayment/   -> Dev3 (Booking, Payment, Notification)
+  reviewadmin/      -> Dev4 (Review, Favorites, Admin)
 
 apps/web/src/modules/
   auth-user/        -> Dev1
