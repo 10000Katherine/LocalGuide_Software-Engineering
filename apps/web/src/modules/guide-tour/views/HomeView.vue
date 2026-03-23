@@ -47,7 +47,18 @@
               <h3>{{ guide.firstName }} {{ guide.lastName }}</h3>
               <p>{{ guide.province || "Province not set" }} | {{ guide.city || "City not set" }} | {{ guide.language || "Language not set" }}</p>
               <p class="bio">{{ guide.bio || "Local expert ready to host unique tours." }}</p>
-              <router-link class="profile-link" :to="'/guides/' + guide.id">View Profile</router-link>
+              <div class="card-actions">
+                <router-link class="profile-link" :to="'/guides/' + guide.id">View Profile</router-link>
+                <el-button
+                  v-if="canFavorite"
+                  class="favorite-btn"
+                  size="small"
+                  plain
+                  :type="favoritesStore.isFavorite(guide.id) ? 'danger' : 'info'"
+                  @click="toggleFavorite(guide.id)">
+                  {{ favoritesStore.isFavorite(guide.id) ? "Unfavorite" : "Add to Favorites" }}
+                </el-button>
+              </div>
             </article>
           </div>
           <el-empty v-if="featuredGuides.length === 0" description="No guides found yet" />
@@ -61,6 +72,8 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { useAuthStore } from "../../../shared/stores/auth";
+import { useFavoritesStore } from "../../../shared/stores/favorites";
 import { searchGuides } from "../api/guideTourApi";
 import {
   CATEGORIES,
@@ -71,6 +84,8 @@ import {
 } from "../../../shared/constants/canadaOptions";
 
 const router = useRouter();
+const authStore = useAuthStore();
+const favoritesStore = useFavoritesStore();
 const loading = ref(true);
 const featuredGuides = ref([]);
 const searchForm = reactive({
@@ -82,6 +97,7 @@ const searchForm = reactive({
 });
 
 const cityOptions = computed(() => citiesForProvince(searchForm.province));
+const canFavorite = computed(() => authStore.user?.role === "TOURIST");
 
 const onProvinceChange = () => {
   if (!cityOptions.value.includes(searchForm.city)) {
@@ -105,7 +121,32 @@ const initials = (firstName, lastName) => {
   return a + b;
 };
 
+const toggleFavorite = async (guideId) => {
+  try {
+    const becameFavorite = await favoritesStore.toggleFavorite(guideId);
+    ElMessage.success(becameFavorite ? "Guide added to favorites" : "Guide removed from favorites");
+  } catch (error) {
+    ElMessage.error(error?.response?.data?.message || "Failed to update favorite");
+  }
+};
+
 onMounted(async () => {
+  if (authStore.accessToken && !authStore.user) {
+    try {
+      await authStore.loadProfile();
+    } catch (error) {
+      void error;
+    }
+  }
+
+  if (canFavorite.value) {
+    try {
+      await favoritesStore.loadFavorites();
+    } catch (error) {
+      ElMessage.warning(error?.response?.data?.message || "Favorites are temporarily unavailable");
+    }
+  }
+
   try {
     const data = await searchGuides({ page: 0, size: 4 });
     featuredGuides.value = data.items || [];
@@ -229,6 +270,18 @@ h1 {
   color: #0f766e;
   text-decoration: none;
   font-weight: 600;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.favorite-btn {
+  margin: 0;
 }
 
 @media (max-width: 1100px) {

@@ -67,7 +67,18 @@
               <h3>{{ guide.firstName }} {{ guide.lastName }}</h3>
               <p>{{ guide.province || "Province TBD" }} | {{ guide.city || "City TBD" }} | {{ guide.language || "Language TBD" }}</p>
               <p class="desc">{{ guide.bio || "Local guide profile" }}</p>
-              <router-link :to="'/guides/' + guide.id">Open Profile</router-link>
+              <div class="card-actions">
+                <router-link :to="'/guides/' + guide.id">View Profile</router-link>
+                <el-button
+                  v-if="canFavorite"
+                  class="favorite-btn"
+                  size="small"
+                  plain
+                  :type="favoritesStore.isFavorite(guide.id) ? 'danger' : 'info'"
+                  @click="toggleFavorite(guide.id)">
+                  {{ favoritesStore.isFavorite(guide.id) ? "Unfavorite" : "Add to Favorites" }}
+                </el-button>
+              </div>
             </article>
             <el-empty v-if="guides.length === 0" description="No guides found" />
           </div>
@@ -103,6 +114,8 @@
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
+import { useAuthStore } from "../../../shared/stores/auth";
+import { useFavoritesStore } from "../../../shared/stores/favorites";
 import { searchGuides, searchTours } from "../api/guideTourApi";
 import {
   CATEGORIES,
@@ -114,6 +127,8 @@ import {
 
 const route = useRoute();
 const router = useRouter();
+const authStore = useAuthStore();
+const favoritesStore = useFavoritesStore();
 
 const typeOptions = [
   { label: "Guides", value: "guides" },
@@ -138,11 +153,17 @@ const tours = ref([]);
 const totalItems = ref(0);
 
 const cityOptions = computed(() => citiesForProvince(state.province));
+const canFavorite = computed(() => authStore.user?.role === "TOURIST");
 
 const subtitle = computed(() => {
   const total = totalItems.value;
   return state.type === "guides" ? total + " guides matched" : total + " tours matched";
 });
+
+const parseNumberQuery = (value) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
 
 const syncFromQuery = () => {
   state.type = route.query.type === "tours" ? "tours" : "guides";
@@ -151,9 +172,13 @@ const syncFromQuery = () => {
   state.date = route.query.date || "";
   state.language = route.query.language || "";
   state.category = route.query.category || "";
-  state.minPrice = route.query.minPrice ? Number(route.query.minPrice) : null;
-  state.maxPrice = route.query.maxPrice ? Number(route.query.maxPrice) : null;
-  state.page = route.query.page ? Math.max(1, Number(route.query.page)) : 1;
+  const minPrice = route.query.minPrice ? parseNumberQuery(route.query.minPrice) : null;
+  const maxPrice = route.query.maxPrice ? parseNumberQuery(route.query.maxPrice) : null;
+  const page = route.query.page ? parseNumberQuery(route.query.page) : null;
+
+  state.minPrice = minPrice === null ? null : Math.max(0, minPrice);
+  state.maxPrice = maxPrice === null ? null : Math.max(0, maxPrice);
+  state.page = page === null ? 1 : Math.max(1, page);
 
   if (!cityOptions.value.includes(state.city)) {
     state.city = "";
@@ -214,7 +239,7 @@ const onProvinceChange = () => {
 
 const applyFilters = () => {
   state.page = 1;
-  router.push({ path: "/search", query: buildQuery() });
+  router.replace({ path: "/search", query: buildQuery() });
 };
 
 const onPageChange = (page) => {
@@ -232,7 +257,16 @@ const resetFilters = () => {
   state.minPrice = null;
   state.maxPrice = null;
   state.page = 1;
-  router.push({ path: "/search", query: buildQuery() });
+  router.replace({ path: "/search", query: buildQuery() });
+};
+
+const toggleFavorite = async (guideId) => {
+  try {
+    const becameFavorite = await favoritesStore.toggleFavorite(guideId);
+    ElMessage.success(becameFavorite ? "Guide added to favorites" : "Guide removed from favorites");
+  } catch (error) {
+    ElMessage.error(error?.response?.data?.message || "Failed to update favorite");
+  }
 };
 
 watch(
@@ -244,8 +278,23 @@ watch(
   { deep: true }
 );
 
-onMounted(() => {
+onMounted(async () => {
   syncFromQuery();
+  if (authStore.accessToken && !authStore.user) {
+    try {
+      await authStore.loadProfile();
+    } catch (error) {
+      void error;
+    }
+  }
+
+  if (canFavorite.value) {
+    try {
+      await favoritesStore.loadFavorites();
+    } catch (error) {
+      ElMessage.warning(error?.response?.data?.message || "Favorites are temporarily unavailable");
+    }
+  }
   loadData();
 });
 </script>
@@ -316,6 +365,18 @@ onMounted(() => {
 .price {
   font-weight: 700;
   color: #0f766e;
+}
+
+.favorite-btn {
+  margin: 0;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .pager {

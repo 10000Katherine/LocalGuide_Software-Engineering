@@ -50,9 +50,6 @@
                 </template>
               </el-table-column>
             </el-table>
-            <p v-if="showingMockBookings" class="booking-note">
-              Showing demo confirmed bookings for Dev 2 UI until the Dev 3 booking API is connected.
-            </p>
           </section>
 
           <section class="card">
@@ -170,10 +167,12 @@ import {
 } from "../../../shared/constants/canadaOptions";
 import {
   getMyGuideProfile,
+  listMyConfirmedBookingRequests,
   listMyTours,
   uploadGuidePhoto,
   updateGuideProfile
 } from "../api/guideTourApi";
+import { reviewAdminApi } from "../../review-admin/api/reviewAdminApi";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -185,6 +184,7 @@ const bookingDialogVisible = ref(false);
 
 const tours = ref([]);
 const bookingRequests = ref([]);
+const recentReviews = ref([]);
 const selectedBooking = ref(null);
 
 const profileSnapshot = reactive({
@@ -306,106 +306,7 @@ const realUpcomingBookings = computed(() => {
     .slice(0, 20);
 });
 
-const formatDateOffset = (offsetDays) => {
-  const date = new Date();
-  date.setDate(date.getDate() + offsetDays);
-  return date.toISOString().slice(0, 10);
-};
-
-const mockTourists = [
-  "Ava Thompson",
-  "Noah Martin",
-  "Emma Nguyen",
-  "Liam Brown"
-];
-
-const mockUpcomingBookings = computed(() => {
-  const sourceTours = [
-    {
-      id: null,
-      title: "Demo City Walk",
-      province: "Not set",
-      city: "Not set",
-      category: "City",
-      language: "Not set",
-      durationHours: 2,
-      price: 95,
-      groupSize: 4,
-      description: "Demo booking for UI preview."
-    },
-    {
-      id: null,
-      title: "Demo Food Experience",
-      province: "Not set",
-      city: "Not set",
-      category: "Food",
-      language: "Not set",
-      durationHours: 3,
-      price: 130,
-      groupSize: 6,
-      description: "Demo booking for UI preview."
-    },
-    {
-      id: null,
-      title: "Demo Heritage Trail",
-      province: "Not set",
-      city: "Not set",
-      category: "Historical",
-      language: "Not set",
-      durationHours: 2,
-      price: 85,
-      groupSize: 5,
-      description: "Demo booking for UI preview."
-    },
-    {
-      id: null,
-      title: "Demo Nature Escape",
-      province: "Not set",
-      city: "Not set",
-      category: "Nature",
-      language: "Not set",
-      durationHours: 4,
-      price: 150,
-      groupSize: 8,
-      description: "Demo booking for UI preview."
-    }
-  ];
-
-  return sourceTours.map((tour, index) => {
-    const pricePerPerson = safeNumber(tour.price, 100);
-    const people = Math.min(2 + index, Math.max(safeNumber(tour.groupSize, 4), 1));
-    const startHour = 9 + index;
-    const startTime = String(startHour).padStart(2, "0") + ":00";
-    const endTime = String(startHour + 2).padStart(2, "0") + ":00";
-
-    return {
-      id: "mock-" + (index + 1),
-      tourId: tour.id,
-      touristName: mockTourists[index % mockTourists.length],
-      tour: tour.title || "Demo Tour",
-      date: formatDateOffset(index + 2),
-      people,
-      status: "CONFIRMED",
-      startTime,
-      endTime,
-      timeLabel: startTime + " - " + endTime,
-      province: tour.province || "Not set",
-      city: tour.city || "Not set",
-      category: tour.category || "City",
-      language: tour.language || "Not set",
-      durationHours: safeNumber(tour.durationHours, 2),
-      pricePerPerson,
-      totalPrice: pricePerPerson * people,
-      description: tour.description || "Demo booking for upcoming booking details preview."
-    };
-  });
-});
-
-const upcomingBookings = computed(() => {
-  return realUpcomingBookings.value.length ? realUpcomingBookings.value : mockUpcomingBookings.value;
-});
-
-const showingMockBookings = computed(() => realUpcomingBookings.value.length === 0);
+const upcomingBookings = computed(() => realUpcomingBookings.value);
 
 const stats = computed(() => {
   const now = new Date();
@@ -430,21 +331,17 @@ const stats = computed(() => {
   };
 });
 
-const recentReviews = computed(() => {
-  const count = Number(profileSnapshot.totalReviews || 0);
-  if (count <= 0) return [];
-
-  return [
-    {
-      id: 1,
-      touristName: "Tourist Reviewer",
-      tour: tours.value[0]?.title || "Tour",
-      rating: Number(profileSnapshot.avgRating || 0).toFixed(1),
-      date: "Recent",
-      comment: "Great local insights and smooth communication."
-    }
-  ];
-});
+const mapRecentReview = (review) => {
+  const createdAt = review?.createdAt ? String(review.createdAt).slice(0, 10) : "Recent";
+  return {
+    id: review?.id,
+    touristName: review?.touristName || "Tourist",
+    tour: review?.tourId ? `Tour ID ${review.tourId}` : "Tour",
+    rating: Number(review?.rating || 0).toFixed(1),
+    date: createdAt,
+    comment: review?.comment || ""
+  };
+};
 
 const openBookingDetails = (booking) => {
   selectedBooking.value = booking || null;
@@ -477,14 +374,20 @@ const loadDashboard = async () => {
 
   loading.value = true;
   try {
-    const [profile, myTours] = await Promise.all([
-      getMyGuideProfile(),
-      listMyTours()
+    const profile = await getMyGuideProfile();
+
+    const [myTours, confirmedBookings, guideReviewsResponse] = await Promise.all([
+      listMyTours(),
+      listMyConfirmedBookingRequests(),
+      reviewAdminApi.listGuideReviews(profile?.id)
     ]);
 
     applyProfileToState(profile || {});
     tours.value = myTours || [];
-    bookingRequests.value = [];
+    bookingRequests.value = Array.isArray(confirmedBookings) ? confirmedBookings : [];
+    recentReviews.value = Array.isArray(guideReviewsResponse?.data)
+      ? guideReviewsResponse.data.map(mapRecentReview).slice(0, 5)
+      : [];
   } catch (error) {
     ElMessage.error(error?.response?.data?.message || "Failed to load dashboard");
   } finally {
@@ -642,12 +545,6 @@ onMounted(loadDashboard);
 
 .status-text.warn {
   color: #dc2626;
-}
-
-.booking-note {
-  margin: 10px 2px 0;
-  color: #64748b;
-  font-size: 0.92rem;
 }
 
 .booking-detail-grid {
