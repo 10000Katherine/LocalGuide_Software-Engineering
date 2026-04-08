@@ -1,39 +1,71 @@
-# LocalGuide Team Testing Quickstart
+LocalGuide Connect – Run Instructions
+1. Prerequisites
 
-This file is for internal team testing.
+Please make sure the following software is installed on your device(needs these environments)
 
-## 1) Run Commands (PowerShell)
+Java 17
+Maven
+Node.js and npm
 
-### Backend
-```powershell
-cd "D:\cs\software engineering\slides\project\LocalGuide_Software-Engineering\apps\backend"
+2. Clone the Repository
+git clone https://github.com/10000Katherine/LocalGuide_Software-Engineering.git
+cd LocalGuide_Software-Engineering
+
+3. Run the Backend
+
+Open a PowerShell terminal and run:
+
+cd apps/backend
 $env:JWT_SECRET = "localguide-dev-secret-please-change"
 mvn spring-boot:run
-```
 
-### Frontend
-```powershell
-cd "D:\cs\software engineering\slides\project\LocalGuide_Software-Engineering\apps\web"
+The backend will start on:
+
+http://localhost:8080/api/v1
+
+
+4. Run the Frontend
+
+Open a new PowerShell terminal and run:
+
+cd LocalGuide_Software-Engineering
+cd apps/web
 npm install
 npm run dev
-```
 
-## 2) URLs
+The frontend will start on:
 
-- Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:8080/api/v1`
-- H2 Console (dev): `http://localhost:8080/h2-console`
+http://localhost:5173
 
-## 3) Default Test Accounts
+5. Development Database
 
-All seeded accounts use password: `Password123!`
+The project uses an H2 in-memory database in development mode.
 
-### Admin
-- `admin@localguide.dev`
+H2 Console:
+
+http://localhost:8080/h2-console
+
+If needed, the default backend startup will automatically seed the development database with test data.
+- Driver Class: org.h2.Driver
+- JDBC URL: jdbc:h2:mem:localguide
+- User Name: sa
+- Password: 
+
+
+6. Default Test Accounts
+All seeded accounts use the following password:
+
 Password123!
 
-### Tourist
-- `tourist@localguide.dev`
+
+Admin
+admin@localguide.dev
+
+Tourist
+tourist@localguide.dev
+
+Guide
+guide@localguide.dev
 
 ### Guides (20)
 - `guide@localguide.dev`
@@ -57,17 +89,22 @@ Password123!
 - `guide.laval@localguide.dev`
 - `guide.burnaby@localguide.dev`
 
-## 4) Fast End-to-End Test Flow
+7. Quick End-to-End Test Flow
+Log in as a tourist using tourist@localguide.dev.
+Search for a guide and submit a booking request for any available tour.
+Open My Bookings and verify that the new booking status is CREATED.
+Log out and sign in as the corresponding guide.
+Open the guide booking request page and accept the booking.
+Log out and return to the tourist account.
+Open the booking and click Pay.
+Confirm payment success and verify that the booking status is updated to CONFIRMED.
 
-1. Login as tourist (`tourist@localguide.dev`) and request a booking from any tour.
-2. Go to `My Bookings` and confirm new booking status is `CREATED`.
-3. Logout and login as the corresponding guide, open `/guide/booking-requests`.
-4. Accept booking request.
-5. Logout and return to tourist account, open booking and pay.
-6. Confirm payment success and booking status updates.
+8. Notes
+If seeded guide or tour data does not appear correctly, restart the backend once.
+The development database is in-memory, so data resets when the backend is restarted.
+If the frontend shows stale state, restart the frontend and refresh the browser.
+Payment is currently implemented using a development-mode simulation/stub for demonstration purposes.
 
-## 5) Notes
+9. Optional IDE Support
 
-- If new seeded guides do not appear, restart backend once more.
-- Guide/tour dev data seeding is idempotent (existing emails are not duplicated).
-- For stale frontend state, restart frontend and hard refresh browser (`Ctrl+F5`).
+The backend may also be opened and run in IntelliJ IDEA as a standard Maven/Spring Boot project. However, the recommended method for testing is the command-line setup shown above.
